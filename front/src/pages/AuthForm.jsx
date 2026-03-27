@@ -1,27 +1,65 @@
 import './Forms.css'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { loginUser, registerUser } from '../services/api'
 
 function AuthForm({ mode }) {
+  const navigate = useNavigate()
   const isRegister = mode === 'register'
   const title = isRegister ? 'Registre-se' : 'Login'
   const formId = isRegister ? 'register-form' : 'login-form'
   const buttonText = isRegister ? 'Cadastrar' : 'Entrar'
-  const emailPlaceholder = isRegister ? 'Email' : 'Email cadastrado'
+  const loginPlaceholder = isRegister ? 'Login' : 'Seu login'
+  const [formData, setFormData] = useState({ login: '', password: '' })
+  const [message, setMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setMessage('')
+    setIsLoading(true)
+
+    try {
+      if (isRegister) {
+        await registerUser(formData)
+        setMessage('Cadastro realizado com sucesso. Faça login.')
+        setTimeout(() => navigate('/login'), 700)
+      } else {
+        const data = await loginUser(formData)
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('login', formData.login)
+        navigate('/dashboard')
+      }
+    } catch (error) {
+      const apiMessage = error.response?.data?.message
+      setMessage(apiMessage || 'Nao foi possivel concluir a operacao.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <main className="auth-page" id={mode}>
       <section className="form-container">
         <h1>{title}</h1>
 
-        <form id={formId} method="post">
+        <form id={formId} method="post" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email">
+            <label htmlFor="login">
               <span className="material-symbols-outlined">mail</span>
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder={emailPlaceholder}
+              type="text"
+              id="login"
+              name="login"
+              placeholder={loginPlaceholder}
+              value={formData.login}
+              onChange={handleChange}
               required
             />
           </div>
@@ -36,14 +74,20 @@ function AuthForm({ mode }) {
               name="password"
               placeholder="Sua senha"
               minLength={isRegister ? 8 : undefined}
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>
 
-          <button type="submit">{buttonText}</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Enviando...' : buttonText}
+          </button>
         </form>
 
-        <p id="form-message" aria-live="polite"></p>
+        <p id="form-message" aria-live="polite">
+          {message}
+        </p>
       </section>
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">

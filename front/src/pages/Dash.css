@@ -96,6 +96,15 @@
   font-weight: 600;
 }
 
+.task-actions select {
+  border: 1px solid #9dc7eb;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background-color: #ffffff;
+  color: #0b63b5;
+  font-weight: 600;
+}
+
 .task-actions .danger {
   background-color: #b42318;
 }
