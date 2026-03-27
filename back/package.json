@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon src/index.js",
+    "db:create": "npx sequelize db:create"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -21,6 +22,7 @@
     "sequelize": "^6.37.8"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "sequelize-cli": "^6.6.5"
   }
 }
