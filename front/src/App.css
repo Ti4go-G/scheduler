@@ -7,8 +7,9 @@
     padding: 0;
     box-sizing: border-box;
 }
-body{
+body, html{
     background: linear-gradient(180deg, #f7fbff 0%, #eef7ff 65%, #e1f1ff 100%);
+    font-family: var(--fonte-principal);
 }
 .menu{
     background-color: rgb(39, 158, 255);
@@ -36,12 +37,10 @@ body{
     justify-content: center;
     gap: 16px;
     min-height: 58vh;
-    font-family: var(--fonte-alternativa);
     padding: 48px 30px 24px;
     max-width: 850px;
 }
 .hero-tag{
-    font-family: var(--fonte-principal);
     font-size: 0.95rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
