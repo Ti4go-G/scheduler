@@ -28,17 +28,7 @@ JWT_SECRET=sua_chave_secreta_aqui
 npm install
 ```
 
-### 1.3 Criar banco de dados
-```bash
-npm run db:create
-```
-
-### 1.4 Executar migrations
-```bash
-npx sequelize db:migrate
-```
-
-### 1.5 Rodar o backend
+### 1.3 Rodar todos os scripts necessários 
 ```bash
 npm run dev
 ```
