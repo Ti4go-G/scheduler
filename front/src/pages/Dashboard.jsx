@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Calendar, dayjsLocalizer } from 'react-big-calendar'
+import dayjs from 'dayjs'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './Dash.css'
 import {
   createTask,
@@ -7,6 +10,8 @@ import {
   getTasks,
   updateTask,
 } from '../services/api'
+
+const localizer = dayjsLocalizer(dayjs)
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -30,6 +35,17 @@ function Dashboard() {
   const pendingTasks = tasks.filter((task) => task.status === 'pendente')
   const completedTasks = tasks.filter((task) => task.status === 'concluida')
   const canceledTasks = tasks.filter((task) => task.status === 'cancelada')
+
+  const calendarEvents = useMemo(
+    () =>
+      tasks.map((task) => ({
+        ...task,
+        title: task.title,
+        start: new Date(task.start),
+        end: new Date(task.end),
+      })),
+    [tasks]
+  )
 
   const formatDateTime = (dateValue) => {
     const date = new Date(dateValue)
@@ -82,7 +98,7 @@ function Dashboard() {
     event.preventDefault()
     localStorage.removeItem('token')
     localStorage.removeItem('login')
-    navigate('/login')
+    navigate('/')
   }
 
   const handleTaskInputChange = (event) => {
@@ -167,6 +183,26 @@ function Dashboard() {
     setIsModalOpen(true)
   }
 
+  const handleSelectEvent = (event) => {
+    handleEditTask(event)
+  }
+
+  const eventStyleGetter = (event) => {
+    const backgroundColorByStatus = {
+      pendente: '#f59e0b',
+      concluida: '#16a34a',
+      cancelada: '#b42318',
+    }
+
+    return {
+      style: {
+        backgroundColor: backgroundColorByStatus[event.status] || '#0b63b5',
+        border: 'none',
+        borderRadius: '8px',
+      },
+    }
+  }
+
   const renderTaskCards = (taskList) => {
     if (!taskList.length) {
       return <p className="empty-message">Nenhuma atividade nesta coluna.</p>
@@ -221,6 +257,31 @@ function Dashboard() {
         <p id="dashboard-message" aria-live="polite">
           {dashboardMessage}
         </p>
+
+        <section className="calendar-wrapper">
+          <Calendar
+            localizer={localizer}
+            events={calendarEvents}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 620 }}
+            messages={{
+              today: 'Hoje',
+              previous: 'Anterior',
+              next: 'Proximo',
+              month: 'Mes',
+              week: 'Semana',
+              day: 'Dia',
+              agenda: 'Agenda',
+              date: 'Data',
+              time: 'Horario',
+              event: 'Evento',
+              noEventsInRange: 'Nenhuma tarefa neste periodo.',
+            }}
+            onSelectEvent={handleSelectEvent}
+            eventPropGetter={eventStyleGetter}
+          />
+        </section>
 
         <section className="wrapper" id="pendentes">
           <h2 className="pend">Atividades pendentes</h2>
